@@ -15,7 +15,6 @@ function addBookToLibrary(title, author, pages, read) {
     let newBook = new Book(title, author, pages, read);
     newBook.id = crypto.randomUUID()
     myLibrary.push(newBook);
-    // viewLibrary();
 }
 
 addBookToLibrary('Flowers for Algernon', 'Daniel Keyes', '311', 'read');
@@ -31,7 +30,6 @@ function viewLibrary() {
     for (let book of myLibrary) {
         let card = document.createElement('div');
         card.classList.add('book-card');
-        card.setAttribute('data-id', book.id);
 
         let title = document.createElement('p');
         let author = document.createElement('p');
@@ -49,7 +47,8 @@ function viewLibrary() {
         remove.setAttribute('data-id', book.id);
 
         remove.addEventListener('click', function() {
-            const index = myLibrary.findIndex(b => b.id === book.id);
+            const targetID = remove.dataset.id;
+            const index = myLibrary.findIndex(book => book.id === targetID);
             if (index !== -1) {
                 myLibrary.splice(index, 1); // remove from array
                 viewLibrary(); 
@@ -63,7 +62,15 @@ function viewLibrary() {
             
         });
 
-        card.append(title, author, pages, read, remove);
+        let toggle = document.createElement('button');
+        toggle.classList.add('toggle-button');
+        toggle.textContent = 'Toggle Read Status';
+
+        toggle.addEventListener('click', function() {
+            book.changeReadStatus();
+        });
+
+        card.append(title, author, pages, read, remove, toggle);
         container.appendChild(card);
     }
 
@@ -113,7 +120,7 @@ addBtn.addEventListener('click', function (e) {
 //     }
 // );
 
-Book.prototype.readStatus = function () {
+Book.prototype.changeReadStatus = function () {
     let curr = this.read;
     if (curr === 'read') {
         this.read = 'not read';
@@ -121,5 +128,6 @@ Book.prototype.readStatus = function () {
     else {
         this.read = 'read';
     }
+    viewLibrary();
 };
 
